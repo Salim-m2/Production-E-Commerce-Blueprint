@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>E-Commerce Technical Blueprint</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3350;
+    --accent: #6c63ff;
+    --accent2: #00d4aa;
+    --accent3: #ff6b6b;
+    --accent4: #ffc107;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --code-bg: #0d1117;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, sans-serif; font-size: 15px; line-height: 1.7; }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(15,17,23,0.95); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+  }
+  nav span { color: var(--accent); font-weight: 700; font-size: 14px; margin-right: 8px; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 12px; padding: 4px 10px; border-radius: 20px; border: 1px solid transparent; transition: all .2s; white-space: nowrap; }
+  nav a:hover, nav a.active { color: var(--accent); border-color: var(--accent); background: rgba(108,99,255,.1); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, #0f1117 0%, #1a1040 50%, #0f2a2a 100%);
+    padding: 60px 40px; text-align: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .hero h1 { font-size: 2.4em; font-weight: 800; background: linear-gradient(135deg, #6c63ff, #00d4aa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero p { color: var(--muted); margin-top: 12px; font-size: 1.05em; max-width: 680px; margin-left: auto; margin-right: auto; }
+  .badges { display: flex; gap: 10px; justify-content: center; margin-top: 20px; flex-wrap: wrap; }
+  .badge { padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+  .badge-purple { background: rgba(108,99,255,.15); color: #a78bfa; border: 1px solid rgba(108,99,255,.3); }
+  .badge-teal { background: rgba(0,212,170,.15); color: #34d399; border: 1px solid rgba(0,212,170,.3); }
+  .badge-red { background: rgba(255,107,107,.15); color: #f87171; border: 1px solid rgba(255,107,107,.3); }
+  .badge-yellow { background: rgba(255,193,7,.15); color: #fbbf24; border: 1px solid rgba(255,193,7,.3); }
+
+  /* LAYOUT */
+  .container { max-width: 960px; margin: 0 auto; padding: 40px 24px; }
+  section { margin-bottom: 60px; scroll-margin-top: 70px; }
+  h2 { font-size: 1.6em; font-weight: 700; color: #fff; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+  h2 .num { background: var(--accent); color: #fff; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+  h3 { font-size: 1.1em; font-weight: 600; color: var(--accent2); margin: 24px 0 10px; }
+  h4 { font-size: .95em; font-weight: 600; color: var(--accent4); margin: 16px 0 8px; }
+  p { color: var(--text); margin-bottom: 10px; }
+
+  /* CARDS */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin: 16px 0; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 16px 0; }
+  .card h4 { margin-top: 0; }
+  .card-accent-purple { border-left: 3px solid var(--accent); }
+  .card-accent-teal { border-left: 3px solid var(--accent2); }
+  .card-accent-red { border-left: 3px solid var(--accent3); }
+  .card-accent-yellow { border-left: 3px solid var(--accent4); }
+
+  /* CODE */
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; margin: 12px 0; font-size: 13px; line-height: 1.6; }
+  code { font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace; }
+  pre code { color: #e2e8f0; }
+  .kw { color: #c792ea; } .fn { color: #82aaff; } .str { color: #c3e88d; } .cm { color: #546e7a; font-style: italic; }
+  .num-lit { color: #f78c6c; } .key { color: #ffcb6b; } .url { color: #89ddff; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+  th { background: var(--surface2); color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; }
+  td { padding: 9px 14px; border: 1px solid var(--border); color: var(--text); vertical-align: top; }
+  tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+
+  /* LISTS */
+  ul, ol { padding-left: 20px; margin: 10px 0; }
+  li { margin-bottom: 6px; color: var(--text); }
+  li::marker { color: var(--accent); }
+
+  /* DIAGRAM */
+  .arch-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin: 16px 0; text-align: center; }
+  .arch-row { display: flex; justify-content: center; align-items: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
+  .arch-box { padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; min-width: 110px; }
+  .ab-purple { background: rgba(108,99,255,.2); border: 1px solid rgba(108,99,255,.5); color: #a78bfa; }
+  .ab-teal { background: rgba(0,212,170,.15); border: 1px solid rgba(0,212,170,.4); color: #34d399; }
+  .ab-red { background: rgba(255,107,107,.15); border: 1px solid rgba(255,107,107,.4); color: #f87171; }
+  .ab-yellow { background: rgba(255,193,7,.15); border: 1px solid rgba(255,193,7,.4); color: #fbbf24; }
+  .ab-blue { background: rgba(56,189,248,.15); border: 1px solid rgba(56,189,248,.4); color: #7dd3fc; }
+  .ab-gray { background: rgba(148,163,184,.1); border: 1px solid rgba(148,163,184,.3); color: #94a3b8; }
+  .arrow { color: var(--muted); font-size: 18px; }
+  .arch-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; margin: 4px 0; }
+
+  /* ROADMAP */
+  .week { display: flex; gap: 16px; margin: 12px 0; align-items: flex-start; }
+  .week-num { background: var(--accent); color: #fff; border-radius: 8px; padding: 6px 12px; font-weight: 700; font-size: 13px; min-width: 80px; text-align: center; flex-shrink: 0; }
+  .week-content { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; }
+  .week-content strong { color: var(--accent2); }
+
+  /* PITFALLS */
+  .pitfall { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent3); border-radius: 8px; padding: 16px; margin: 12px 0; }
+  .pitfall .label { color: var(--accent3); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+  .fix { border-left-color: var(--accent2); }
+  .fix .label { color: var(--accent2); }
+
+  /* ENDPOINT TABLE */
+  .method { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; margin-right: 4px; }
+  .get { background: rgba(0,212,170,.2); color: #34d399; }
+  .post { background: rgba(108,99,255,.2); color: #a78bfa; }
+  .put { background: rgba(255,193,7,.2); color: #fbbf24; }
+  .delete { background: rgba(255,107,107,.2); color: #f87171; }
+  .patch { background: rgba(56,189,248,.2); color: #7dd3fc; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <span>⚡ Blueprint</span>
+  <a href="#arch">1. Architecture</a>
+  <a href="#db">2. Database</a>
+  <a href="#frontend">3. Frontend</a>
+  <a href="#api">4. API</a>
+  <a href="#payments">5. Payments</a>
+  <a href="#security">6. Security</a>
+  <a href="#email">7. Email</a>
+  <a href="#roadmap">8. Roadmap</a>
+  <a href="#pitfalls">9. Pitfalls</a>
+</nav>
+
+<div class="hero">
+  <h1>Production E-Commerce Blueprint</h1>
+  <p>A complete, opinionated technical reference for building a real e-commerce platform with Django REST + React + MongoDB — from zero to deployed.</p>
+  <div class="badges">
+    <span class="badge badge-purple">Django 4.x REST API</span>
+    <span class="badge badge-teal">React 18 + Redux Toolkit</span>
+    <span class="badge badge-red">MongoDB + Mongoengine</span>
+    <span class="badge badge-yellow">Docker + Nginx + VPS</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 1: SYSTEM ARCHITECTURE
+     ══════════════════════════════════════════════════════ -->
+<section id="arch">
+<h2><span class="num">1</span> System Architecture</h2>
+
+<h3>How the Stack Fits Together</h3>
+<p>Your three main layers are completely decoupled. React talks to Django only via HTTP JSON calls (the REST API). Django talks to MongoDB to persist data. They never touch each other's internals.</p>
+
+<div class="arch-diagram">
+  <div class="arch-label">User's Browser</div>
+  <div class="arch-row"><div class="arch-box ab-purple">React App (SPA)</div></div>
+  <div class="arch-row"><span class="arrow">↕ HTTPS/JSON (JWT in httpOnly Cookie)</span></div>
+  <div class="arch-row">
+    <div class="arch-box ab-teal">Nginx (reverse proxy + static files)</div>
+  </div>
+  <div class="arch-row"><span class="arrow">↕</span></div>
+  <div class="arch-row">
+    <div class="arch-box ab-yellow">Django REST API (Gunicorn)</div>
+    <div class="arch-box ab-red">Celery Worker</div>
+  </div>
+  <div class="arch-row"><span class="arrow">↕ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↕ (tasks)</span></div>
+  <div class="arch-row">
+    <div class="arch-box ab-blue">MongoDB</div>
+    <div class="arch-box ab-gray">Redis (cache + broker)</div>
+    <div class="arch-box ab-gray">AWS S3 / Cloudinary</div>
+  </div>
+</div>
+
+<h3>Each Component Explained</h3>
+<div class="card-grid">
+  <div class="card card-accent-purple">
+    <h4>React (Frontend)</h4>
+    <p>A Single Page Application built with Vite + React. It fetches data from Django, renders UI, manages client state. Deployed as static files served by Nginx.</p>
+  </div>
+  <div class="card card-accent-teal">
+    <h4>Django (REST API)</h4>
+    <p>Handles all business logic: auth, cart, orders, payments. Uses <strong>djangorestframework</strong> for endpoints and <strong>mongoengine</strong> as the MongoDB ODM. Runs via Gunicorn (WSGI server) behind Nginx.</p>
+  </div>
+  <div class="card card-accent-red">
+    <h4>MongoDB</h4>
+    <p>Your database. Flexible documents suit e-commerce well — products have variable attributes, orders embed items, etc. Use Atlas (managed cloud) in production, not a self-hosted instance.</p>
+  </div>
+  <div class="card card-accent-yellow">
+    <h4>Redis</h4>
+    <p>Two jobs: (1) Cache — store frequently-read data (product lists, category trees) to avoid hitting MongoDB on every request. (2) Message broker — pass tasks to Celery workers.</p>
+  </div>
+  <div class="card card-accent-purple">
+    <h4>Celery</h4>
+    <p>Background task runner. Handles emails, order status webhooks, image processing, export jobs — anything that shouldn't block an HTTP response. Runs as a separate process alongside Django.</p>
+  </div>
+  <div class="card card-accent-teal">
+    <h4>Nginx</h4>
+    <p>Reverse proxy that sits in front of everything. Serves React's static build files directly, forwards API calls to Gunicorn, handles SSL termination, and serves uploaded media or proxies to S3.</p>
+  </div>
+</div>
+
+<h3>Static & Media Files in Production</h3>
+<div class="card">
+  <ul>
+    <li><strong>Static files</strong> (React build, CSS, JS): Nginx serves these directly from <code>/dist</code>. Never let Django serve static files in production.</li>
+    <li><strong>User-uploaded media</strong> (product images, avatars): Store on <strong>Cloudinary</strong> or <strong>AWS S3</strong>. Use <code>django-storages</code> + <code>boto3</code> to upload directly to S3 from Django. Serve via CloudFront CDN for speed.</li>
+    <li><strong>Why not serve from your server?</strong> It's slow, doesn't scale, and wastes your server's bandwidth on binary data.</li>
+  </ul>
+</div>
+
+<h3>Deployment: Docker on a VPS</h3>
+<p>Use <strong>Docker Compose</strong> on a <strong>DigitalOcean Droplet</strong> (4GB RAM, $24/month) or equivalent. This is the sweet spot — simpler than Kubernetes, more reproducible than bare metal.</p>
+<pre><code><span class="cm"># docker-compose.yml (simplified)</span>
+<span class="key">services:</span>
+  <span class="key">nginx:</span>
+    <span class="key">image:</span> <span class="str">nginx:alpine</span>
+    <span class="key">ports:</span> [<span class="str">"80:80"</span>, <span class="str">"443:443"</span>]
+    <span class="key">volumes:</span>
+      - <span class="str">./nginx.conf:/etc/nginx/conf.d/default.conf</span>
+      - <span class="str">./frontend/dist:/var/www/html</span>
+      - <span class="str">certbot-certs:/etc/letsencrypt</span>
+
+  <span class="key">api:</span>
+    <span class="key">build:</span> <span class="str">./backend</span>
+    <span class="key">command:</span> <span class="str">gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3</span>
+    <span class="key">env_file:</span> <span class="str">.env</span>
+    <span class="key">depends_on:</span> [redis]
+
+  <span class="key">celery:</span>
+    <span class="key">build:</span> <span class="str">./backend</span>
+    <span class="key">command:</span> <span class="str">celery -A config worker -l info</span>
+    <span class="key">env_file:</span> <span class="str">.env</span>
+
+  <span class="key">redis:</span>
+    <span class="key">image:</span> <span class="str">redis:7-alpine</span>
+    <span class="key">volumes:</span> [<span class="str">redis-data:/data</span>]</code></pre>
+<p>Use <strong>Let's Encrypt + Certbot</strong> for free HTTPS. Use <strong>GitHub Actions</strong> to auto-deploy: push to <code>main</code> → SSH into VPS → <code>docker compose pull && docker compose up -d</code>.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 2: DATABASE
+     ══════════════════════════════════════════════════════ -->
+<section id="db">
+<h2><span class="num">2</span> MongoDB Collections</h2>
+<p>MongoDB stores data as BSON documents (essentially JSON). Here are all the collections you need with their schemas.</p>
+
+<h3>Users</h3>
+<pre><code>{
+  <span class="key">"_id"</span>: ObjectId,
+  <span class="key">"email"</span>: <span class="str">"user@example.com"</span>,   <span class="cm">// unique index</span>
+  <span class="key">"password_hash"</span>: <span class="str">"bcrypt..."</span>,
+  <span class="key">"role"</span>: <span class="str">"customer"</span>,              <span class="cm">// "customer" | "seller" | "admin"</span>
+  <span class="key">"first_name"</span>: <span class="str">"Jane"</span>,
+  <span class="key">"last_name"</span>: <span class="str">"Doe"</span>,
+  <span class="key">"phone"</span>: <span class="str">"+254712345678"</span>,
+  <span class="key">"avatar_url"</span>: <span class="str">"https://cdn.example.com/..."</span>,
+  <span class="key">"is_verified"</span>: <span class="kw">true</span>,
+  <span class="key">"addresses"</span>: [
+    { <span class="key">"label"</span>: <span class="str">"Home"</span>, <span class="key">"street"</span>: <span class="str">"..."</span>, <span class="key">"city"</span>: <span class="str">"Nairobi"</span>, <span class="key">"is_default"</span>: <span class="kw">true</span> }
+  ],
+  <span class="key">"created_at"</span>: ISODate,
+  <span class="key">"last_login"</span>: ISODate
+}</code></pre>
+
+<h3>Products</h3>
+<pre><code>{
+  <span class="key">"_id"</span>: ObjectId,
+  <span class="key">"seller_id"</span>: ObjectId,          <span class="cm">// ref to Users</span>
+  <span class="key">"category_id"</span>: ObjectId,
+  <span class="key">"name"</span>: <span class="str">"Air Jordan 1 Retro"</span>,
+  <span class="key">"slug"</span>: <span class="str">"air-jordan-1-retro"</span>,       <span class="cm">// unique index, for URLs</span>
+  <span class="key">"description"</span>: <span class="str">"..."</span>,
+  <span class="key">"brand"</span>: <span class="str">"Nike"</span>,
+  <span class="key">"base_price"</span>: <span class="num-lit">120.00</span>,
+  <span class="key">"images"</span>: [<span class="str">"https://cdn/.../img1.jpg"</span>, <span class="str">"..."</span>],
+  <span class="key">"tags"</span>: [<span class="str">"sneakers"</span>, <span class="str">"basketball"</span>],
+  <span class="key">"variants"</span>: [
+    {
+      <span class="key">"variant_id"</span>: <span class="str">"uuid-or-objectid"</span>,
+      <span class="key">"size"</span>: <span class="str">"42"</span>,
+      <span class="key">"color"</span>: <span class="str">"Black/Red"</span>,
+      <span class="key">"sku"</span>: <span class="str">"AJ1-42-BR"</span>,
+      <span class="key">"price"</span>: <span class="num-lit">120.00</span>,          <span class="cm">// can differ from base_price</span>
+      <span class="key">"stock"</span>: <span class="num-lit">15</span>,
+      <span class="key">"images"</span>: []             <span class="cm">// variant-specific images optional</span>
+    }
+  ],
+  <span class="key">"avg_rating"</span>: <span class="num-lit">4.3</span>,
+  <span class="key">"review_count"</span>: <span class="num-lit">87</span>,
+  <span class="key">"is_active"</span>: <span class="kw">true</span>,
+  <span class="key">"created_at"</span>: ISODate
+}
+<span class="cm">// Indexes: { slug: 1 }, { category_id: 1, is_active: 1 },
+// { name: "text", tags: "text" }  ← text search index</span></code></pre>
+
+<h3>Categories</h3>
+<pre><code>{
+  <span class="key">"_id"</span>: ObjectId,
+  <span class="key">"name"</span>: <span class="str">"Footwear"</span>,
+  <span class="key">"slug"</span>: <span class="str">"footwear"</span>,
+  <span class="key">"parent_id"</span>: <span class="kw">null</span>,             <span class="cm">// null = top-level; ObjectId = subcategory</span>
+  <span class="key">"image_url"</span>: <span class="str">"..."</span>,
+  <span class="key">"order"</span>: <span class="num-lit">1</span>                        <span class="cm">// display order</span>
+}
+<span class="cm">// To build a tree: query all, then nest by parent_id in code
+// Index: { parent_id: 1 }</span></code></pre>
+
+<h3>Cart</h3>
+<pre><code>{
+  <span class="key">"_id"</span>: ObjectId,
+  <span class="key">"user_id"</span>: ObjectId,             <span class="cm">// null for guest carts</span>
+  <span class="key">"session_key"</span>: <span class="str">"uuid-for-guest"</span>, <span class="cm">// stored in cookie for guests</span>
+  <span class="key">"items"</span>: [
+    {
+      <span class="key">"product_id"</span>: ObjectId,
+      <span class="key">"variant_id"</span>: <span class="str">"AJ1-42-BR"</span>,
+      <span class="key">"quantity"</span>: <span class="num-lit">2</span>,
+      <span class="key">"price_at_add"</span>: <span class="num-lit">120.00</span>    <span class="cm">// snapshot price</span>
+    }
+  ],
+  <span class="key">"coupon_code"</span>: <span class="str">"SAVE10"</span>,
+  <span class="key">"updated_at"</span>: ISODate
+}
+<span class="cm">// On login: merge guest cart (by session_key) into user's cart</span></code></pre>
+
+<h3>Orders</h3>
+<pre><code>{
+  <span class="key">"_id"</span>: ObjectId,
+  <span class="key">"order_number"</span>: <span class="str">"ORD-2024-00142"</span>, <span class="cm">// human-readable, unique</span>
+  <span class="key">"user_id"</span>: ObjectId,
+  <span class="key">"status"</span>: <span class="str">"pending"</span>,   <span class="cm">// pending|paid|processing|shipped|delivered|cancelled|refunded</span>
+  <span class="key">"items"</span>: [
+    {
+      <span class="key">"product_id"</span>: ObjectId,
+      <span class="key">"product_name"</span>: <span class="str">"Air Jordan 1"</span>,  <span class="cm">// snapshot — important!</span>
+      <span class="key">"variant_id"</span>: <span class="str">"AJ1-42-BR"</span>,
+      <span class="key">"quantity"</span>: <span class="num-lit">2</span>,
+      <span class="key">"unit_price"</span>: <span class="num-lit">120.00</span>,
+      <span class="key">"subtotal"</span>: <span class="num-lit">240.00</span>
+    }
+  ],
+  <span class="key">"shipping_address"</span>: { <span class="key">"street"</span>: <span class="str">"..."</span>, <span class="key">"city"</span>: <span class="str">"Nairobi"</span> },
+  <span class="key">"shipping_method"</span>: <span class="str">"standard"</span>,
+  <span class="key">"shipping_cost"</span>: <span class="num-lit">5.00</span>,
+  <span class="key">"subtotal"</span>: <span class="num-lit">240.00</span>,
+  <span class="key">"discount"</span>: <span class="num-lit">24.00</span>,
+  <span class="key">"tax"</span>: <span class="num-lit">0.00</span>,
+  <span class="key">"total"</span>: <span class="num-lit">221.00</span>,
+  <span class="key">"payment_id"</span>: ObjectId,
+  <span class="key">"tracking_number"</span>: <span class="str">"KQ12345KE"</span>,
+  <span class="key">"notes"</span>: <span class="str">""</span>,
+  <span class="key">"status_history"</span>: [
+    { <span class="key">"status"</span>: <span class="str">"pending"</span>, <span class="key">"changed_at"</span>: ISODate, <span class="key">"by"</span>: <span class="str">"system"</span> }
+  ],
+  <span class="key">"created_at"</span>: ISODate
+}</code></pre>
+
+<h3>Reviews</h3>
+<pre><code>{
+  <span class="key">"_id"</span>: ObjectId,
+  <span class="key">"product_id"</span>: ObjectId,  <span class="cm">// index this</span>
+  <span class="key">"user_id"</span>: ObjectId,
+  <span class="key">"order_id"</span>: ObjectId,    <span class="cm">// verify purchase before allowing review</span>
+  <span class="key">"rating"</span>: <span class="num-lit">5</span>,             <span class="cm">// 1–5</span>
+  <span class="key">"title"</span>: <span class="str">"Great product!"</span>,
+  <span class="key">"body"</span>: <span class="str">"..."</span>,
+  <span class="key">"images"</span>: [],
+  <span class="key">"is_verified_purchase"</span>: <span class="kw">true</span>,
+  <span class="key">"helpful_votes"</span>: <span class="num-lit">12</span>,
+  <span class="key">"created_at"</span>: ISODate
+}</code></pre>
+
+<h3>Other Collections (Schema Summary)</h3>
+<table>
+  <tr><th>Collection</th><th>Key Fields</th><th>Notes</th></tr>
+  <tr><td>Wishlist</td><td>user_id, product_ids[]</td><td>One document per user, array of product refs</td></tr>
+  <tr><td>Coupons</td><td>code (unique), type (percent/fixed), value, min_order, max_uses, used_count, expiry</td><td>Index on code for fast lookup</td></tr>
+  <tr><td>Payments</td><td>order_id, stripe_payment_intent_id (unique), amount, currency, status, metadata</td><td>Never store card details — Stripe handles that</td></tr>
+  <tr><td>Tokens</td><td>user_id, token (hashed), type (refresh/email_verify/password_reset), expires_at</td><td>TTL index on expires_at to auto-delete</td></tr>
+</table>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 3: REACT FRONTEND
+     ══════════════════════════════════════════════════════ -->
+<section id="frontend">
+<h2><span class="num">3</span> React Frontend Structure</h2>
+
+<h3>Project Setup</h3>
+<pre><code><span class="cm"># Create with Vite (much faster than CRA)</span>
+npm create vite@latest storefront -- --template react
+cd storefront
+npm install react-router-dom @reduxjs/toolkit react-redux \
+  axios react-query @tanstack/react-query \
+  react-hook-form zod @hookform/resolvers \
+  swiper lucide-react react-hot-toast</code></pre>
+
+<h3>Folder Structure</h3>
+<pre><code>src/
+├── api/          <span class="cm"># Axios instance + all API call functions</span>
+│   ├── axiosInstance.js
+│   ├── authAPI.js
+│   ├── productAPI.js
+│   ├── cartAPI.js
+│   └── orderAPI.js
+├── components/   <span class="cm"># Reusable UI components</span>
+│   ├── layout/   (Navbar, Footer, Sidebar)
+│   ├── product/  (ProductCard, ProductGrid, StarRating)
+│   ├── cart/     (CartItem, CartSummary)
+│   ├── ui/       (Button, Modal, Spinner, Badge, Input)
+│   └── forms/    (AddressForm, LoginForm)
+├── pages/        <span class="cm"># One component per route</span>
+│   ├── Home.jsx
+│   ├── ProductList.jsx
+│   ├── ProductDetail.jsx
+│   ├── Cart.jsx
+│   ├── Checkout.jsx
+│   ├── OrderConfirmation.jsx
+│   ├── auth/     (Login.jsx, Register.jsx, ForgotPassword.jsx)
+│   ├── user/     (Profile.jsx, Orders.jsx, Wishlist.jsx)
+│   └── admin/    (Dashboard.jsx, Products.jsx, OrderManage.jsx)
+├── store/        <span class="cm"># Redux Toolkit slices</span>
+│   ├── index.js
+│   ├── authSlice.js
+│   ├── cartSlice.js
+│   └── uiSlice.js
+├── hooks/        <span class="cm"># Custom React hooks</span>
+│   ├── useAuth.js
+│   ├── useCart.js
+│   └── useDebounce.js
+├── utils/        <span class="cm"># Helpers, formatters</span>
+└── router.jsx    <span class="cm"># React Router config</span></code></pre>
+
+<h3>State Management Strategy</h3>
+<div class="card-grid">
+  <div class="card card-accent-purple">
+    <h4>Redux Toolkit (global persistent state)</h4>
+    <ul>
+      <li><strong>authSlice</strong>: current user object, isAuthenticated</li>
+      <li><strong>cartSlice</strong>: cart items count (for navbar badge)</li>
+      <li><strong>uiSlice</strong>: cart drawer open/closed, modal state</li>
+    </ul>
+  </div>
+  <div class="card card-accent-teal">
+    <h4>TanStack Query (server data / caching)</h4>
+    <ul>
+      <li>All API data: products, orders, reviews</li>
+      <li>Handles loading, error, caching, refetching automatically</li>
+      <li>Much better than useEffect + useState for server data</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Key Page Implementations</h3>
+
+<h4>Product Listing Page — Filters + Pagination</h4>
+<pre><code><span class="cm">// URL pattern: /products?category=shoes&min_price=50&max_price=200&rating=4&page=2&sort=price_asc</span>
+<span class="cm">// All filters live in URL params — this makes filters shareable and browser-history friendly</span>
+
+<span class="kw">const</span> <span class="fn">ProductList</span> = () => {
+  <span class="kw">const</span> [searchParams, setSearchParams] = useSearchParams();
+
+  <span class="kw">const</span> filters = {
+    category: searchParams.get(<span class="str">'category'</span>),
+    min_price: searchParams.get(<span class="str">'min_price'</span>),
+    max_price: searchParams.get(<span class="str">'max_price'</span>),
+    rating: searchParams.get(<span class="str">'rating'</span>),
+    page: searchParams.get(<span class="str">'page'</span>) || <span class="num-lit">1</span>,
+    sort: searchParams.get(<span class="str">'sort'</span>) || <span class="str">'newest'</span>,
+  };
+
+  <span class="kw">const</span> { data, isLoading } = useQuery({
+    queryKey: [<span class="str">'products'</span>, filters],
+    queryFn: () => productAPI.list(filters),
+  });
+
+  <span class="kw">const</span> <span class="fn">updateFilter</span> = (key, value) => {
+    setSearchParams(prev => { prev.set(key, value); prev.set(<span class="str">'page'</span>, <span class="str">'1'</span>); <span class="kw">return</span> prev; });
+  };
+  ...
+}</code></pre>
+
+<h4>Product Detail Page</h4>
+<p>Sections: image gallery (Swiper), title/price/rating, variant selector (size + color buttons that update selected variant), quantity input, Add to Cart / Add to Wishlist, tabs for Description / Reviews / Shipping, Related Products carousel.</p>
+<p>Key logic: when a user selects a size, check <code>variant.stock === 0</code> and disable "Add to Cart" with an "Out of Stock" message.</p>
+
+<h4>Checkout Flow (3 Steps)</h4>
+<pre><code><span class="cm">// Step 1: Address — use react-hook-form + zod validation</span>
+<span class="cm">// Step 2: Shipping method selection (standard $5 / express $15)</span>
+<span class="cm">// Step 3: Payment — Stripe Elements renders the card input in an iframe (PCI compliant)</span>
+<span class="cm">// On submit: create Stripe PaymentIntent on backend → confirm on frontend → backend webhook confirms order</span></code></pre>
+
+<h4>Admin Dashboard</h4>
+<p>Protect with a route guard that checks <code>user.role === 'admin'</code>. Key pages: Products CRUD (with image upload to S3), Orders list with status filter and inline status update, Inventory alerts (items with stock &lt; 5), Coupons management. Use <strong>Recharts</strong> for revenue graphs.</p>
+
+<h3>Global Axios Setup</h3>
+<pre><code><span class="cm">// src/api/axiosInstance.js</span>
+<span class="kw">const</span> api = axios.create({
+  baseURL: <span class="str">'/api/v1'</span>,
+  withCredentials: <span class="kw">true</span>,   <span class="cm">// sends httpOnly cookies automatically</span>
+});
+
+<span class="cm">// Auto-refresh JWT on 401</span>
+api.interceptors.response.use(
+  res => res,
+  <span class="kw">async</span> err => {
+    <span class="kw">if</span> (err.response?.status === <span class="num-lit">401</span> && !err.config._retry) {
+      err.config._retry = <span class="kw">true</span>;
+      <span class="kw">await</span> axios.post(<span class="str">'/api/v1/auth/token/refresh/'</span>, {}, { withCredentials: <span class="kw">true</span> });
+      <span class="kw">return</span> api(err.config);
+    }
+    <span class="kw">return</span> Promise.reject(err);
+  }
+);</code></pre>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 4: API ENDPOINTS
+     ══════════════════════════════════════════════════════ -->
+<section id="api">
+<h2><span class="num">4</span> Django REST API Endpoints</h2>
+<p>All endpoints are versioned under <code>/api/v1/</code>. Use <code>django-rest-framework</code> + <code>djangorestframework-simplejwt</code>.</p>
+
+<h3>Authentication</h3>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr>
+  <tr><td><span class="method post">POST</span></td><td>/auth/register/</td><td>Register, send verification email</td><td>—</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/auth/login/</td><td>Returns access token (httpOnly cookie), user data</td><td>—</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/auth/token/refresh/</td><td>Silently refresh access token using refresh cookie</td><td>—</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/auth/logout/</td><td>Clears cookies server-side</td><td>✓</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/auth/password/reset/</td><td>Send reset email</td><td>—</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/auth/password/reset/confirm/</td><td>Set new password with token</td><td>—</td></tr>
+  <tr><td><span class="method get">GET</span></td><td>/auth/verify-email/{token}/</td><td>Verify email address</td><td>—</td></tr>
+</table>
+
+<h3>Products</h3>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr>
+  <tr><td><span class="method get">GET</span></td><td>/products/</td><td>List with filters: ?category=&min_price=&max_price=&rating=&search=&sort=&page=</td><td>—</td></tr>
+  <tr><td><span class="method get">GET</span></td><td>/products/{slug}/</td><td>Product detail with variants + avg_rating</td><td>—</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/products/</td><td>Create product</td><td>Admin/Seller</td></tr>
+  <tr><td><span class="method put">PUT</span></td><td>/products/{slug}/</td><td>Update product</td><td>Admin/Seller</td></tr>
+  <tr><td><span class="method delete">DELETE</span></td><td>/products/{slug}/</td><td>Soft-delete (set is_active=false)</td><td>Admin</td></tr>
+  <tr><td><span class="method get">GET</span></td><td>/categories/</td><td>Full category tree</td><td>—</td></tr>
+</table>
+
+<h3>Cart</h3>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr>
+  <tr><td><span class="method get">GET</span></td><td>/cart/</td><td>Get cart (user cart or guest cart via session cookie)</td><td>Optional</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/cart/items/</td><td>Add item {product_id, variant_id, quantity}</td><td>Optional</td></tr>
+  <tr><td><span class="method patch">PATCH</span></td><td>/cart/items/{item_id}/</td><td>Update quantity</td><td>Optional</td></tr>
+  <tr><td><span class="method delete">DELETE</span></td><td>/cart/items/{item_id}/</td><td>Remove item</td><td>Optional</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/cart/merge/</td><td>Called on login — merges guest cart into user cart</td><td>✓</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/cart/coupon/</td><td>Apply coupon code</td><td>Optional</td></tr>
+</table>
+
+<h3>Orders</h3>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr>
+  <tr><td><span class="method post">POST</span></td><td>/orders/</td><td>Create order from cart (validates stock, calculates totals)</td><td>✓</td></tr>
+  <tr><td><span class="method get">GET</span></td><td>/orders/</td><td>User's own orders list</td><td>✓</td></tr>
+  <tr><td><span class="method get">GET</span></td><td>/orders/{order_number}/</td><td>Order detail</td><td>✓</td></tr>
+  <tr><td><span class="method patch">PATCH</span></td><td>/orders/{order_number}/status/</td><td>Update status (admin only)</td><td>Admin</td></tr>
+  <tr><td><span class="method get">GET</span></td><td>/admin/orders/</td><td>All orders with filters</td><td>Admin</td></tr>
+</table>
+
+<h3>Reviews, Wishlist, Payments</h3>
+<table>
+  <tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr>
+  <tr><td><span class="method get">GET</span></td><td>/products/{slug}/reviews/</td><td>Paginated reviews</td><td>—</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/products/{slug}/reviews/</td><td>Submit review (must have delivered order)</td><td>✓</td></tr>
+  <tr><td><span class="method delete">DELETE</span></td><td>/reviews/{id}/</td><td>Delete own review</td><td>✓</td></tr>
+  <tr><td><span class="method get">GET</span></td><td>/wishlist/</td><td>User's wishlist</td><td>✓</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/wishlist/{product_id}/</td><td>Toggle (add/remove)</td><td>✓</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/payments/create-intent/</td><td>Creates Stripe PaymentIntent, returns client_secret</td><td>✓</td></tr>
+  <tr><td><span class="method post">POST</span></td><td>/payments/webhook/</td><td>Stripe sends events here (order confirmation)</td><td>Stripe sig</td></tr>
+</table>
+
+<h3>Django Project Structure</h3>
+<pre><code>backend/
+├── config/
+│   ├── settings/ (base.py, dev.py, prod.py)
+│   ├── urls.py
+│   └── wsgi.py
+├── apps/
+│   ├── authentication/
+│   ├── products/
+│   ├── cart/
+│   ├── orders/
+│   ├── reviews/
+│   ├── wishlist/
+│   ├── payments/
+│   └── users/
+├── core/           <span class="cm"># shared: permissions, pagination, utils</span>
+└── manage.py</code></pre>
+
+<h3>MongoDB + Django: mongoengine setup</h3>
+<pre><code><span class="cm"># settings/base.py</span>
+<span class="kw">import</span> mongoengine
+
+mongoengine.connect(
+    db=env(<span class="str">'MONGO_DB'</span>),
+    host=env(<span class="str">'MONGO_URI'</span>),   <span class="cm"># mongodb+srv://... from Atlas</span>
+    alias=<span class="str">'default'</span>
+)
+<span class="cm"># Note: Do NOT use Django's built-in ORM — mongoengine replaces it.
+# Use mongoengine Documents instead of Django Models.</span></code></pre>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 5: PAYMENTS
+     ══════════════════════════════════════════════════════ -->
+<section id="payments">
+<h2><span class="num">5</span> Payment Integration</h2>
+
+<h3>Use Stripe — here's why</h3>
+<div class="card-grid">
+  <div class="card card-accent-purple">
+    <h4>Stripe ✓ (Recommended)</h4>
+    <ul>
+      <li>Better developer experience, excellent docs</li>
+      <li>Stripe Elements keeps card data off your server (PCI compliance handled)</li>
+      <li>Webhook system is reliable and easy to test locally</li>
+      <li>Available in Kenya via Stripe (check current availability)</li>
+    </ul>
+  </div>
+  <div class="card card-accent-yellow">
+    <h4>PayPal / Flutterwave (Alternatives)</h4>
+    <ul>
+      <li>Flutterwave is excellent for East African markets (M-Pesa, cards)</li>
+      <li>Same webhook pattern applies</li>
+      <li>PayPal is clunkier to integrate but has a huge user base</li>
+    </ul>
+  </div>
+</div>
+
+<h3>The Complete Payment Flow</h3>
+<pre><code><span class="cm">// 1. User clicks "Place Order" on checkout page
+// 2. Frontend calls your backend to create a PaymentIntent</span>
+
+<span class="cm">## Backend: POST /api/v1/payments/create-intent/</span>
+<span class="kw">import</span> stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
+<span class="kw">def</span> <span class="fn">create_payment_intent</span>(request):
+    order = create_pending_order(request.user, request.data)  <span class="cm"># saves order as "pending"</span>
+    intent = stripe.PaymentIntent.create(
+        amount=<span class="fn">int</span>(order.total * <span class="num-lit">100</span>),   <span class="cm"># Stripe uses cents</span>
+        currency=<span class="str">"usd"</span>,
+        metadata={ <span class="str">"order_id"</span>: <span class="fn">str</span>(order.id) },
+        idempotency_key=<span class="fn">str</span>(order.id)     <span class="cm"># prevents duplicate charges on retry</span>
+    )
+    <span class="kw">return</span> Response({ <span class="str">"client_secret"</span>: intent.client_secret })
+
+<span class="cm">// 3. Frontend uses Stripe.js to collect card and confirm the payment
+// The card data goes directly to Stripe servers — never touches your backend</span>
+<span class="kw">const</span> result = <span class="kw">await</span> stripe.confirmCardPayment(clientSecret, {
+  payment_method: { card: cardElement }
+});
+
+<span class="cm">// 4. Stripe sends a webhook to your server when payment succeeds
+## Backend: POST /api/v1/payments/webhook/</span>
+<span class="kw">def</span> <span class="fn">stripe_webhook</span>(request):
+    payload = request.body
+    sig = request.META[<span class="str">'HTTP_STRIPE_SIGNATURE'</span>]
+    <span class="cm"># ALWAYS verify the signature — rejects fake webhooks</span>
+    event = stripe.Webhook.construct_event(payload, sig, settings.STRIPE_WEBHOOK_SECRET)
+
+    <span class="kw">if</span> event[<span class="str">'type'</span>] == <span class="str">'payment_intent.succeeded'</span>:
+        order_id = event[<span class="str">'data'</span>][<span class="str">'object'</span>][<span class="str">'metadata'</span>][<span class="str">'order_id'</span>]
+        <span class="cm"># Mark order as paid, trigger confirmation email via Celery</span>
+        update_order_status.delay(order_id, <span class="str">'paid'</span>)
+    <span class="kw">return</span> HttpResponse(status=<span class="num-lit">200</span>)  <span class="cm"># ALWAYS return 200 — or Stripe will retry</span></code></pre>
+
+<h3>Idempotency Keys</h3>
+<p>Pass <code>idempotency_key=str(order.id)</code> to Stripe. This means if the user double-clicks "Pay" or a network retry fires the request twice, Stripe will return the same PaymentIntent instead of creating a second one. Never charge twice for the same order.</p>
+
+<h3>Test Without Real Money</h3>
+<p>Use Stripe's test card <code>4242 4242 4242 4242</code>, any future expiry, any CVC. Install the Stripe CLI and run <code>stripe listen --forward-to localhost:8000/api/v1/payments/webhook/</code> to receive webhooks locally during development.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 6: SECURITY & PERFORMANCE
+     ══════════════════════════════════════════════════════ -->
+<section id="security">
+<h2><span class="num">6</span> Security &amp; Performance</h2>
+
+<h3>JWT Storage: httpOnly Cookies (not localStorage)</h3>
+<div class="card card-accent-red">
+  <p><strong>Never store JWTs in localStorage.</strong> JavaScript running on your page (including third-party scripts) can read localStorage — this is an XSS attack vector. httpOnly cookies cannot be read by JavaScript at all. The browser sends them automatically with every request.</p>
+  <p>Configure in Django: set <code>JWT_AUTH_COOKIE = 'access_token'</code>, <code>JWT_AUTH_COOKIE_HTTP_ONLY = True</code>, <code>JWT_AUTH_COOKIE_SAMESITE = 'Lax'</code>. In production, also set <code>JWT_AUTH_COOKIE_SECURE = True</code> (HTTPS only).</p>
+</div>
+
+<h3>Rate Limiting</h3>
+<pre><code><span class="cm"># Django REST Framework throttling</span>
+REST_FRAMEWORK = {
+    <span class="str">'DEFAULT_THROTTLE_CLASSES'</span>: [
+        <span class="str">'rest_framework.throttling.AnonRateThrottle'</span>,
+        <span class="str">'rest_framework.throttling.UserRateThrottle'</span>
+    ],
+    <span class="str">'DEFAULT_THROTTLE_RATES'</span>: {
+        <span class="str">'anon'</span>: <span class="str">'100/hour'</span>,
+        <span class="str">'user'</span>: <span class="str">'1000/hour'</span>,
+        <span class="str">'login'</span>: <span class="str">'10/minute'</span>,    <span class="cm"># tight limit for auth endpoints</span>
+    }
+}</code></pre>
+
+<h3>Input Validation</h3>
+<ul>
+  <li><strong>Backend</strong>: DRF Serializers validate every incoming field. Never trust frontend data. Validate types, lengths, ranges, and business rules (e.g., quantity &gt; 0, stock available).</li>
+  <li><strong>Frontend</strong>: Use Zod schemas with react-hook-form for a good UX — show errors before the user submits. But this is UX only, not security.</li>
+  <li><strong>File uploads</strong>: Validate file type (check magic bytes, not just extension) and size server-side before uploading to S3.</li>
+</ul>
+
+<h3>Additional Security Checklist</h3>
+<table>
+  <tr><th>Concern</th><th>Solution</th></tr>
+  <tr><td>CSRF attacks</td><td>Django's CSRF middleware + SameSite=Lax cookie. Exempt only the Stripe webhook endpoint (verified by signature instead).</td></tr>
+  <tr><td>SQL/NoSQL Injection</td><td>Mongoengine parameterizes queries automatically. Never build raw queries with string concatenation.</td></tr>
+  <tr><td>Sensitive data exposure</td><td>Never log full payment data or passwords. Use Django's <code>LOGGING</code> config to filter sensitive fields.</td></tr>
+  <tr><td>Admin endpoint security</td><td>IP whitelist your admin routes in Nginx, or use 2FA.</td></tr>
+  <tr><td>Dependency vulnerabilities</td><td>Run <code>pip audit</code> and <code>npm audit</code> regularly. GitHub Dependabot handles this automatically.</td></tr>
+  <tr><td>Secrets management</td><td>Never commit <code>.env</code> files. Use environment variables injected at runtime (Docker secrets or platform env vars).</td></tr>
+</table>
+
+<h3>Performance: MongoDB Indexing Strategy</h3>
+<pre><code><span class="cm"># Essential indexes — run these once on startup or via migration script</span>
+db.products.createIndex({ <span class="str">"slug"</span>: <span class="num-lit">1</span> }, { unique: <span class="kw">true</span> })
+db.products.createIndex({ <span class="str">"category_id"</span>: <span class="num-lit">1</span>, <span class="str">"is_active"</span>: <span class="num-lit">1</span> })
+db.products.createIndex({ <span class="str">"base_price"</span>: <span class="num-lit">1</span> })
+db.products.createIndex({ <span class="str">"avg_rating"</span>: <span class="num-lit">-1</span> })
+db.products.createIndex({ <span class="str">"name"</span>: <span class="str">"text"</span>, <span class="str">"description"</span>: <span class="str">"text"</span>, <span class="str">"tags"</span>: <span class="str">"text"</span> })
+db.orders.createIndex({ <span class="str">"user_id"</span>: <span class="num-lit">1</span>, <span class="str">"created_at"</span>: <span class="num-lit">-1</span> })
+db.orders.createIndex({ <span class="str">"order_number"</span>: <span class="num-lit">1</span> }, { unique: <span class="kw">true</span> })
+db.reviews.createIndex({ <span class="str">"product_id"</span>: <span class="num-lit">1</span>, <span class="str">"created_at"</span>: <span class="num-lit">-1</span> })
+db.tokens.createIndex({ <span class="str">"expires_at"</span>: <span class="num-lit">1</span> }, { expireAfterSeconds: <span class="num-lit">0</span> })  <span class="cm"># TTL</span></code></pre>
+
+<h3>Image Optimization</h3>
+<ul>
+  <li>Use <strong>Cloudinary</strong> — it auto-resizes and serves WebP format via URL params: <code>https://res.cloudinary.com/.../w_400,f_auto/image.jpg</code></li>
+  <li>Or use S3 + CloudFront + a Lambda@Edge function to resize on the fly.</li>
+  <li>In React: use the <code>loading="lazy"</code> attribute on all non-hero images, and define explicit <code>width</code>/<code>height</code> to prevent layout shift.</li>
+</ul>
+
+<h3>Redis Caching Strategy</h3>
+<pre><code><span class="cm"># Cache product lists for 5 minutes (they change infrequently)</span>
+<span class="cm"># Cache category tree for 1 hour (almost never changes)</span>
+<span class="cm"># Don't cache: cart, orders, user data (must always be fresh)</span>
+
+<span class="kw">from</span> django.core.cache <span class="kw">import</span> cache
+
+<span class="kw">def</span> <span class="fn">get_categories</span>():
+    key = <span class="str">'category_tree'</span>
+    cached = cache.get(key)
+    <span class="kw">if</span> cached: <span class="kw">return</span> cached
+    result = Category.objects.all()
+    cache.set(key, result, timeout=<span class="num-lit">3600</span>)
+    <span class="kw">return</span> result</code></pre>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 7: EMAIL & NOTIFICATIONS
+     ══════════════════════════════════════════════════════ -->
+<section id="email">
+<h2><span class="num">7</span> Email &amp; Notifications</h2>
+
+<h3>Setup: Celery + Redis + SendGrid</h3>
+<pre><code><span class="cm"># pip install celery django-celery-results sendgrid</span>
+
+<span class="cm"># config/celery.py</span>
+<span class="kw">from</span> celery <span class="kw">import</span> Celery
+app = Celery(<span class="str">'ecommerce'</span>)
+app.config_from_object(<span class="str">'django.conf:settings'</span>, namespace=<span class="str">'CELERY'</span>)
+app.autodiscover_tasks()
+
+<span class="cm"># settings.py</span>
+CELERY_BROKER_URL = <span class="str">'redis://redis:6379/0'</span>
+CELERY_RESULT_BACKEND = <span class="str">'redis://redis:6379/0'</span>
+EMAIL_BACKEND = <span class="str">'django.core.mail.backends.smtp.EmailBackend'</span>
+EMAIL_HOST = <span class="str">'smtp.sendgrid.net'</span>
+EMAIL_HOST_USER = <span class="str">'apikey'</span>
+EMAIL_HOST_PASSWORD = env(<span class="str">'SENDGRID_API_KEY'</span>)</code></pre>
+
+<h3>Email Tasks</h3>
+<pre><code><span class="cm"># apps/orders/tasks.py</span>
+<span class="kw">from</span> celery <span class="kw">import</span> shared_task
+<span class="kw">from</span> django.core.mail <span class="kw">import</span> send_mail
+<span class="kw">from</span> django.template.loader <span class="kw">import</span> render_to_string
+
+@shared_task(bind=<span class="kw">True</span>, max_retries=<span class="num-lit">3</span>)
+<span class="kw">def</span> <span class="fn">send_order_confirmation</span>(self, order_id):
+    <span class="kw">try</span>:
+        order = Order.objects.get(id=order_id)
+        html = render_to_string(<span class="str">'emails/order_confirmation.html'</span>, {<span class="str">'order'</span>: order})
+        send_mail(
+            subject=<span class="fn">f</span><span class="str">"Order {order.order_number} confirmed!"</span>,
+            message=<span class="str">""</span>,
+            html_message=html,
+            from_email=<span class="str">"orders@yourdomain.com"</span>,
+            recipient_list=[order.user.email]
+        )
+    <span class="kw">except</span> Exception <span class="kw">as</span> exc:
+        <span class="kw">raise</span> self.retry(exc=exc, countdown=<span class="num-lit">60</span>)  <span class="cm"># retry after 1 min on failure</span></code></pre>
+
+<h3>All Email Types to Build</h3>
+<table>
+  <tr><th>Trigger</th><th>Email Sent</th><th>Task Called By</th></tr>
+  <tr><td>Registration</td><td>Welcome + email verification link</td><td>Registration view → task</td></tr>
+  <tr><td>Order placed + paid</td><td>Order confirmation with items list</td><td>Stripe webhook → task</td></tr>
+  <tr><td>Order shipped</td><td>Shipping notification with tracking number</td><td>Admin status update → task</td></tr>
+  <tr><td>Order delivered</td><td>Ask for a review</td><td>Delivery status update → task</td></tr>
+  <tr><td>Password reset</td><td>Reset link (valid 1 hour)</td><td>Password reset view → task</td></tr>
+  <tr><td>Low stock (internal)</td><td>Alert to admin email</td><td>Periodic Celery Beat task</td></tr>
+</table>
+
+<p>Use <strong>HTML email templates</strong> (inline CSS, table-based layout for email client compatibility). <strong>MJML</strong> is a framework that generates email-safe HTML — highly recommended.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 8: ROADMAP
+     ══════════════════════════════════════════════════════ -->
+<section id="roadmap">
+<h2><span class="num">8</span> Implementation Roadmap</h2>
+
+<div class="week">
+  <div class="week-num">Week 1–2</div>
+  <div class="week-content">
+    <strong>Foundation: Project Setup + Auth</strong><br/>
+    Set up Django project with split settings (dev/prod). Connect to MongoDB Atlas. Configure JWT auth with httpOnly cookies. Build User model, register/login/logout/refresh endpoints. Set up Vite + React with React Router, Redux Toolkit, Axios interceptors. Build Login and Register pages. <em>Test: Postman tests for all auth endpoints. Verify token refresh cycle works.</em>
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-num">Week 3–4</div>
+  <div class="week-content">
+    <strong>Product Catalog</strong><br/>
+    Build Product, Category, Variant mongoengine Documents. API: product list (with pagination, filtering, text search), product detail, category tree. Set up MongoDB text search index. Cloudinary integration for images. React: Home page, Product List with filters in URL params, Product Detail with Swiper gallery and variant selector. <em>Test: Load 50 seeded products, verify filter combinations return correct results, check load time &lt;500ms with Redis cache.</em>
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-num">Week 5</div>
+  <div class="week-content">
+    <strong>Cart System</strong><br/>
+    Cart API for both guest (session cookie) and logged-in users. Cart merge on login. Cart sidebar component (drawer that slides in). Full cart page. Stock validation on add-to-cart. <em>Test: Add items as guest, log in, verify items merge. Try adding more items than stock allows.</em>
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-num">Week 6</div>
+  <div class="week-content">
+    <strong>Checkout + Stripe Payments</strong><br/>
+    Multi-step checkout form (react-hook-form + Zod). Stripe Elements integration (frontend). Create PaymentIntent endpoint (backend). Stripe webhook handler. Order creation on payment success. Clear cart after successful order. <em>Test: Complete a full test purchase with Stripe test card. Simulate webhook delivery with Stripe CLI. Attempt double-payment with same order ID.</em>
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-num">Week 7</div>
+  <div class="week-content">
+    <strong>Orders, Reviews, Wishlist</strong><br/>
+    Order list + detail pages for users. Reviews (submit only after verified purchase, update product avg_rating on save). Wishlist toggle. <em>Test: Verify you can only review a product you've ordered and received. Check avg_rating updates correctly after review.</em>
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-num">Week 8</div>
+  <div class="week-content">
+    <strong>Celery + Email System</strong><br/>
+    Set up Celery + Redis. All email tasks (confirmation, shipping, password reset). MJML templates. Celery Beat for periodic tasks (low stock alerts). <em>Test: Place an order, verify confirmation email arrives within 10 seconds. Test retry behavior by intentionally failing a task.</em>
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-num">Week 9</div>
+  <div class="week-content">
+    <strong>Admin Dashboard</strong><br/>
+    React admin pages: product CRUD, order management (status updates), inventory view, coupon management. Role-based route guards. Recharts revenue dashboard. <em>Test: Create product as admin, verify it appears in storefront. Update order status, verify email fires.</em>
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-num">Week 10</div>
+  <div class="week-content">
+    <strong>Coupons + User Dashboard</strong><br/>
+    Coupon model, validate/apply API endpoint, frontend coupon input in cart. User profile: edit info, manage addresses. Order history with detail view, order tracking. <em>Test: Apply expired coupon (should fail). Apply coupon to order below min_order value (should fail). Verify discount reflected in order total.</em>
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-num">Week 11</div>
+  <div class="week-content">
+    <strong>Security Hardening + Performance</strong><br/>
+    Rate limiting on all endpoints (especially auth). MongoDB indexes for all query patterns. Redis caching for product lists and category tree. Image lazy loading in React. Add Helmet (Django security middleware). Run <code>npm audit</code> and <code>pip audit</code>. <em>Test: Run k6 or Locust load test simulating 100 concurrent users on product list. Target &lt;300ms p95 response time.</em>
+  </div>
+</div>
+
+<div class="week">
+  <div class="week-num">Week 12</div>
+  <div class="week-content">
+    <strong>Docker + Deployment + CI/CD</strong><br/>
+    Write Dockerfile for Django, docker-compose.yml for full stack. Nginx config (reverse proxy + SSL). Let's Encrypt SSL setup. GitHub Actions workflow: run tests on PR, deploy to VPS on merge to main. Set up MongoDB Atlas backups. Set up Sentry for error monitoring. <em>Test: Full end-to-end test on production URL. Simulate server crash and verify Docker restarts containers.</em>
+  </div>
+</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     SECTION 9: PITFALLS
+     ══════════════════════════════════════════════════════ -->
+<section id="pitfalls">
+<h2><span class="num">9</span> Common Pitfalls &amp; How to Avoid Them</h2>
+
+<div class="pitfall">
+  <div class="label">⚠ Pitfall 1: Race Conditions on Stock Decrement</div>
+  <p>Two users buy the last item simultaneously. Both see stock=1, both succeed, you oversell. This is a real problem with MongoDB.</p>
+</div>
+<div class="pitfall fix">
+  <div class="label">✓ Fix</div>
+  <p>Use MongoDB's atomic <code>findOneAndUpdate</code> with a filter that includes <code>stock &gt;= quantity</code>. If it returns null, stock was insufficient. Never read stock then write separately.</p>
+  <pre><code>result = Product.objects(id=pid, <span class="str">"variants__variant_id"</span>=vid, <span class="str">"variants__stock__gte"</span>=qty).update_one(
+    dec__variants__S__stock=qty  <span class="cm"># atomic decrement</span>
+)
+<span class="kw">if not</span> result: <span class="kw">raise</span> OutOfStockError()</code></pre>
+</div>
+
+<div class="pitfall">
+  <div class="label">⚠ Pitfall 2: Storing Product Prices in Cart Only</div>
+  <p>If a product's price changes after someone adds it to cart, their cart now shows the wrong price. At checkout, which price do you charge?</p>
+</div>
+<div class="pitfall fix">
+  <div class="label">✓ Fix</div>
+  <p>Store <code>price_at_add</code> in the cart item when it's added. On checkout, use this stored price. Also snapshot product name, image, and variant details into the Order document — so historical orders are never affected by product edits.</p>
+</div>
+
+<div class="pitfall">
+  <div class="label">⚠ Pitfall 3: Processing Webhooks Twice</div>
+  <p>Stripe can occasionally send the same webhook event more than once (network retries). If you mark an order "paid" twice, you send two confirmation emails and may double-decrement stock.</p>
+</div>
+<div class="pitfall fix">
+  <div class="label">✓ Fix</div>
+  <p>Make your webhook handler idempotent. Before processing, check if the Stripe event ID has already been recorded. If yes, return 200 immediately without processing.</p>
+  <pre><code><span class="kw">if</span> Payment.objects(stripe_event_id=event.id).first():
+    <span class="kw">return</span> HttpResponse(status=<span class="num-lit">200</span>)  <span class="cm"># already processed</span></code></pre>
+</div>
+
+<div class="pitfall">
+  <div class="label">⚠ Pitfall 4: Fetching Data in useEffect Everywhere</div>
+  <p>New React developers write <code>useEffect(() =&gt; { fetch(...) }, [])</code> everywhere. This leads to loading state bugs, race conditions on fast navigation, and no caching — every page visit refetches everything.</p>
+</div>
+<div class="pitfall fix">
+  <div class="label">✓ Fix</div>
+  <p>Use TanStack Query (React Query) for all server data. It handles caching, deduplication, background refetching, and loading/error states consistently. One library replaces dozens of useEffect patterns.</p>
+</div>
+
+<div class="pitfall">
+  <div class="label">⚠ Pitfall 5: Not Versioning Your API from Day One</div>
+  <p>You build the API without versioning. Six months later you need to change a response shape — but your mobile app (or third-party integrations) break. Now you're stuck.</p>
+</div>
+<div class="pitfall fix">
+  <div class="label">✓ Fix</div>
+  <p>Always prefix all endpoints with <code>/api/v1/</code> from the very first endpoint. It costs nothing to add now and saves you later. When you release breaking changes, add <code>/api/v2/</code> and keep v1 alive temporarily.</p>
+</div>
+
+<div class="pitfall">
+  <div class="label">⚠ Pitfall 6: Treating MongoDB Like a Relational Database</div>
+  <p>Writing lots of multi-collection queries because you normalized everything. MongoDB's strength is embedding related data. If you always need product + variants + category together, embed variants in the product document.</p>
+</div>
+<div class="pitfall fix">
+  <div class="label">✓ Fix</div>
+  <p>Rule of thumb: Embed data that is always read together and doesn't grow unboundedly (variants, addresses, order items). Reference by ObjectId when data is shared across many documents (products in orders — but snapshot name/price at order time).</p>
+</div>
+
+<div class="pitfall">
+  <div class="label">⚠ Pitfall 7: Building the Admin Dashboard First</div>
+  <p>Many beginners build the admin panel first because it seems manageable. You spend 4 weeks on it before having a working storefront. You also won't know which admin features matter until you have real store data.</p>
+</div>
+<div class="pitfall fix">
+  <div class="label">✓ Fix</div>
+  <p>Follow the roadmap: auth → products → cart → checkout → emails → THEN admin. Use Django Admin (the built-in one) as a temporary admin interface during development. Build your custom admin dashboard last, when you know exactly what you need.</p>
+</div>
+
+<div class="pitfall">
+  <div class="label">⚠ Pitfall 8: Skipping Tests Until the End</div>
+  <p>"I'll write tests later" means no tests ever. You also lose confidence in refactoring, which leads to a codebase full of "don't touch this — it works and I don't know why."</p>
+</div>
+<div class="pitfall fix">
+  <div class="label">✓ Fix</div>
+  <p>Write at minimum: API integration tests (use DRF's APITestCase) for every endpoint as you build it. Test happy paths + key failure cases (out of stock, invalid coupon, unauthorized access). For React, test business logic in custom hooks with Vitest. Use Postman collections as a quick sanity check after each deploy.</p>
+</div>
+
+</section>
+
+<div style="text-align:center; padding: 40px; color: var(--muted); border-top: 1px solid var(--border); margin-top: 40px;">
+  <p style="font-size:1.1em; color: var(--accent2); font-weight:600;">You have everything you need. Start with Week 1. Ship something every week.</p>
+  <p style="margin-top:8px;">Blueprint covers Django 4.x · React 18 · MongoDB Atlas · Redis · Celery · Stripe · Docker · Nginx</p>
+</div>
+
+</div><!-- /container -->
+
+<script>
+  // Highlight active nav section on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`nav a[href="#${e.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
